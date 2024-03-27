@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Google Sign-In</title>
+    <!-- Google Sign-In API -->
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <!-- Google Sign-In configuration -->
+    <meta name="google-signin-client_id" content="YOUR_GOOGLE_CLIENT_ID" />
+  </head>
+  <body>
+    <!-- Sign-in button -->
+    <div id="signinButton">
+      <button onclick="signIn()">Sign in with Google</button>
+    </div>
+
+    <!-- User feedback -->
+    <div id="status"></div>
+
+    <!-- Profile information -->
+    <div id="profileInfo" style="display: none">
+      <img id="profileImage" alt="Profile Picture" />
+      <div id="profileName"></div>
+      <div id="profileEmail"></div>
+      <button onclick="signOut()">Sign out</button>
+    </div>
+
+    <script>
+      //  -> to initialize Google Sign-In
+      function initGoogleSignIn() {
+        gapi.load("auth2", function () {
+          auth2 = gapi.auth2.init({
+            client_id: "YOUR_GOOGLE_CLIENT_ID",
+          });
+        });
+      }
+
+      // -> to handle sign-in
+      function signIn() {
+        auth2.signIn().then(
+          function (user) {
+            var profile = user.getBasicProfile();
+            document.getElementById("status").innerText =
+              "Signed in as " + profile.getName();
+            document.getElementById("profileImage").src = profile.getImageUrl();
+            document.getElementById("profileName").innerText =
+              "Name: " + profile.getName();
+            document.getElementById("profileEmail").innerText =
+              "Email: " + profile.getEmail();
+            document.getElementById("signinButton").style.display = "none";
+            document.getElementById("profileInfo").style.display = "block";
+          },
+          function (error) {
+            console.error("Sign-in error:", error);
+          }
+        );
+      }
+
+      // -> to handle sign-out
+      function signOut() {
+        auth2.signOut().then(function () {
+          document.getElementById("status").innerText = "";
+          document.getElementById("profileImage").src = "";
+          document.getElementById("profileName").innerText = "";
+          document.getElementById("profileEmail").innerText = "";
+          document.getElementById("signinButton").style.display = "block";
+          document.getElementById("profileInfo").style.display = "none";
+        });
+      }
+
+      // -> to initialize Google Signin on page load
+      window.onload = function () {
+        initGoogleSignIn();
+      };
+    </script>
+  </body>
+</html>
